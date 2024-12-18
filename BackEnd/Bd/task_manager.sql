@@ -40,6 +40,11 @@ CREATE TABLE `tasks` (
 -- Índices para tablas volcadas
 --
 
+INSERT INTO tasks 
+(id_task, name_task, description_task, start_date, final_date, priority) 
+VALUES (NULL, 'oficio', 'hay que hacerlo rapido', '2024-12-04', '2024-12-18', 'baja'),
+(NULL, 'examen', 'estudiar para el examen', '2024-12-18', '2024-12-25', 'high');
+
 --
 -- Indices de la tabla `tasks`
 --
