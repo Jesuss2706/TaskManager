@@ -22,6 +22,8 @@ export async function getTaskById(id) {
 }
 
 export async function createTask(nombre, descripcion, fecha_inicio, fecha_final, prioridad) {
+    console.log("hereee 3");
+    
     const [result] = await pool.query(`
     INSERT INTO tasks (name_task, description_task, start_date, final_date, priority)
     VALUES (?, ?, ?, ?, ?)
@@ -49,6 +51,3 @@ export async function deleteTask(id) {
         'DELETE FROM `tasks` WHERE `tasks`.`id_task` = ?', [id]);
     return 'se ha eliminado correctamente'
 }
-
-const result = await deleteTask(2);
-console.log(result);
