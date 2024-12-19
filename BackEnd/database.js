@@ -7,7 +7,7 @@ const pool = mysql.createPool({
     database: 'task_manager'
 }).promise();
 
-async function getTasks() {
+export async function getTasks() {
     const [rows] = await pool.query("SELECT * FROM tasks");
     return [rows];
 }
