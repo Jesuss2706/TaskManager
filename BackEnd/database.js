@@ -22,8 +22,6 @@ export async function getTaskById(id) {
 }
 
 export async function createTask(nombre, descripcion, fecha_inicio, fecha_final, prioridad) {
-    console.log("hereee 3");
-    
     const [result] = await pool.query(`
     INSERT INTO tasks (name_task, description_task, start_date, final_date, priority)
     VALUES (?, ?, ?, ?, ?)

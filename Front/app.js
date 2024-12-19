@@ -1,82 +1,93 @@
-// get all services and use the endpoints
+import { createTask, deleteTask, getAllTasks, getTaskById, updateTask } from '../Front/services.js';
 
-const generalUrl = 'http://localhost:8080';
+let taskTable = document.getElementById('tableName');
 
-const getAllTasks = async () => {
-    const url = `${generalUrl}/tasks`;
-    return await fetch(url).then(response => r.json());
-}
+// Function to open the modal
+function showModal(taskId = null) {
+    const modal = document.getElementById('exampleModal');
 
-const getTaskById = async (id) => {
-    const url = '${generalUrl}/tasks/${id}';
-    return await fetch(url).then(response => r.json());
-}
-
-const createTask = async (task) => {
-    const url = '${generalUrl}/tasks';
-    return await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(task)
-    }).then(response => response.json());
-}
-
-
-const updateTask = async (task) => {
-    const url = '${generalUrl}/tasks/${task.id}';
-    return await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(task)
-    }).then(response => response.json());
-}
-
-const deleteTask = async (id) => {
-    const url = '${generalUrl}/tasks/${id}';
-    return await fetch(url, {
-        method: 'DELETE'
-    }).then(response => r.json());
-}
-
-//let modal = new boostrap.Modal(document.getElementById('exampleModal'), {keyboard: false});
-
-
-let id = null;
-let taskTable = document.getElementById('tableName'); 
-
-
-// get all data and use in the table
-async function readTask() {
-    var datas = "";
-    const result = await getAllTasks();
-
-    for (let i = 0; i < result.length; i++) {
-        const task = result[i]; 
-        datas += "<tr>";
-        datas += `<td>${task.id}</td>`;
-        datas += `<td>${task.name}</td>`;
-        datas += `<td>${task.description}</td>`;
-        datas += `<td>${task.startDate}</td>`;
-        datas += `<td>${task.endDate}</td>`;
-        datas += `<td>${task.priority}</td>`;
-        // datas += '<td>'
-        //     + '<div class="btn-group" role="group" aria-label="Editar">'
-        //     + `<button type="button" class="btn btn-sm btn-success" onclick="showModal(${task.id})">Update</button>`
-        //     + '</div>'
-
-        //     + ' <div class="btn-group" role="group" aria-label="eliminar">'
-        //     + `<button type="button" class="btn btn-sm btn-danger" onclick="deleteValues(${task.id})">Delete</button>`
-        //     + '</div>'
-
-        //     + '</td>';
-        datas += "</tr>";
+    if (taskId) {
+        getTaskById(taskId).then(task => {
+            console.log(task);
+            document.getElementById('taskId').value = task.id_task;
+            document.getElementById('nameTask').value = task.name_task;
+            document.getElementById('descriptionTask').value = task.description_task;
+            document.getElementById('startDate').value = task.start_date.split('T')[0];
+            document.getElementById('endDate').value = task.final_date.split('T')[0];
+            document.getElementById('priority').value = task.priority;
+        }).catch(error => console.error(error));
+    } else {
+        document.getElementById('taskForm').reset();
     }
 
-    taskTable.innerHTML = datas;
+    modal.classList.add('show');
+    modal.style.display = 'block';
+    document.body.classList.add('modal-open');
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
 }
+
+// Function to close the modal
+function closeModal() {
+    const modal = document.getElementById('exampleModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
+}
+
+// Function to save the task (create or update)
+function saveTask() {
+    const task = {
+        id: document.getElementById('taskId').value,
+        name: document.getElementById('nameTask').value,
+        description: document.getElementById('descriptionTask').value,
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        priority: document.getElementById('priority').value,
+    };
+
+    if (task.id) {
+        updateTask(task).then(() => readTask());
+    } else {
+        createTask(task).then(() => readTask());
+    }
+    closeModal();
+}
+
+// Function to populate the table
+async function readTask() {
+    const result = await getAllTasks();
+    let rows = "";
+    result.forEach(task => {
+        rows += `<tr>
+            <td>${task.id_task}</td>
+            <td>${task.name_task}</td>
+            <td>${task.description_task}</td>
+            <td>${task.start_date.split('T')[0]}</td>
+            <td>${task.final_date.split('T')[0]}</td>
+            <td>${task.priority}</td>
+            <td>
+                <button class="btn btn-sm btn-success" onclick="showModal(${task.id_task})">Update</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteValues(${task.id_task})">Delete</button>
+            </td>
+        </tr>`;
+    });
+    taskTable.innerHTML = rows;
+}
+
+// Function to delete a task
+async function deleteValues(id) {
+    await deleteTask(id);
+    readTask();
+}
+
+// Exponer funciones globalmente
+window.showModal = showModal;
+window.closeModal = closeModal;
+window.saveTask = saveTask;
+window.deleteValues = deleteValues;
 
 readTask();

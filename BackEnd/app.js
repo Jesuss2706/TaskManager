@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 //insert: POS (Create), Select: GET (READ), updated: PUT (Update),  delete: DELETE (delete) => CRUD
 app.get("/tasks", async (req, res) => {
   const tasks = await getTasks();
-  res.send(tasks);
+  res.send(tasks[0]);
 })
 
 app.get("/tasks/:id_task", async (req, res) => {
@@ -41,7 +41,7 @@ app.put("/tasks/:id_task", async (req, res) => {
 app.delete("/tasks/:id_task", async (req, res) => {
   const id = req.params.id_task;
   const task = await deleteTask(id);
-  res.send(task);
+  res.status(201).send({});
 });
 
 app.use((err, req, res, next) => {
